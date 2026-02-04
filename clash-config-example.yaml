@@ -1,0 +1,243 @@
+# Clash 配置示例 - 解决 Provider Pull 错误
+# 本配置展示了如何配置健壮的 Provider 设置以避免 EOF 错误
+
+# 全局设置
+port: 7890
+socks-port: 7891
+allow-lan: false
+mode: rule
+log-level: info
+external-controller: 127.0.0.1:9090
+
+# 建议: 增加全局超时设置 (Clash Meta/Premium)
+profile:
+  store-selected: true
+  store-fake-ip: true
+
+# DNS 配置
+dns:
+  enable: true
+  listen: 0.0.0.0:53
+  enhanced-mode: fake-ip
+  fake-ip-range: 198.18.0.1/16
+  nameserver:
+    - 223.5.5.5
+    - 119.29.29.29
+  fallback:
+    - 8.8.8.8
+    - 1.1.1.1
+
+# ========================================
+# 方案 1: 使用原始 URL + 本地缓存
+# ========================================
+rule-providers:
+  F1-TV-original:
+    type: http
+    behavior: classical
+    url: "https://raw.dler.io/dler-io/Rules/main/Clash/Provider/Media/F1%20TV.yaml"
+    interval: 86400  # 24小时更新一次
+    path: ./providers/rules/f1-tv.yaml  # 本地缓存路径
+
+  BBC-iPlayer-original:
+    type: http
+    behavior: classical
+    url: "https://raw.dler.io/dler-io/Rules/main/Clash/Provider/Media/BBC%20iPlayer.yaml"
+    interval: 86400
+    path: ./providers/rules/bbc-iplayer.yaml
+
+  Line-TV-original:
+    type: http
+    behavior: classical
+    url: "https://raw.dler.io/dler-io/Rules/main/Clash/Provider/Media/Line%20TV.yaml"
+    interval: 86400
+    path: ./providers/rules/line-tv.yaml
+
+  TikTok-original:
+    type: http
+    behavior: classical
+    url: "https://raw.dler.io/dler-io/Rules/main/Clash/Provider/TikTok.yaml"
+    interval: 86400
+    path: ./providers/rules/tiktok.yaml
+
+# ========================================
+# 方案 2: 使用 jsDelivr CDN (推荐)
+# ========================================
+  F1-TV-jsdelivr:
+    type: http
+    behavior: classical
+    url: "https://cdn.jsdelivr.net/gh/dler-io/Rules@main/Clash/Provider/Media/F1%20TV.yaml"
+    interval: 86400
+    path: ./providers/rules/f1-tv-jsdelivr.yaml
+
+  BBC-iPlayer-jsdelivr:
+    type: http
+    behavior: classical
+    url: "https://cdn.jsdelivr.net/gh/dler-io/Rules@main/Clash/Provider/Media/BBC%20iPlayer.yaml"
+    interval: 86400
+    path: ./providers/rules/bbc-iplayer-jsdelivr.yaml
+
+  Line-TV-jsdelivr:
+    type: http
+    behavior: classical
+    url: "https://cdn.jsdelivr.net/gh/dler-io/Rules@main/Clash/Provider/Media/Line%20TV.yaml"
+    interval: 86400
+    path: ./providers/rules/line-tv-jsdelivr.yaml
+
+  TikTok-jsdelivr:
+    type: http
+    behavior: classical
+    url: "https://cdn.jsdelivr.net/gh/dler-io/Rules@main/Clash/Provider/TikTok.yaml"
+    interval: 86400
+    path: ./providers/rules/tiktok-jsdelivr.yaml
+
+# ========================================
+# 方案 3: 使用 GitHub Raw 直连
+# ========================================
+  F1-TV-github:
+    type: http
+    behavior: classical
+    url: "https://raw.githubusercontent.com/dler-io/Rules/main/Clash/Provider/Media/F1%20TV.yaml"
+    interval: 86400
+    path: ./providers/rules/f1-tv-github.yaml
+
+  BBC-iPlayer-github:
+    type: http
+    behavior: classical
+    url: "https://raw.githubusercontent.com/dler-io/Rules/main/Clash/Provider/Media/BBC%20iPlayer.yaml"
+    interval: 86400
+    path: ./providers/rules/bbc-iplayer-github.yaml
+
+  Line-TV-github:
+    type: http
+    behavior: classical
+    url: "https://raw.githubusercontent.com/dler-io/Rules/main/Clash/Provider/Media/Line%20TV.yaml"
+    interval: 86400
+    path: ./providers/rules/line-tv-github.yaml
+
+  TikTok-github:
+    type: http
+    behavior: classical
+    url: "https://raw.githubusercontent.com/dler-io/Rules/main/Clash/Provider/TikTok.yaml"
+    interval: 86400
+    path: ./providers/rules/tiktok-github.yaml
+
+# ========================================
+# 方案 4: 使用本地文件 (最稳定)
+# ========================================
+  F1-TV-local:
+    type: file
+    behavior: classical
+    path: ./providers/rules/f1-tv.yaml
+
+  BBC-iPlayer-local:
+    type: file
+    behavior: classical
+    path: ./providers/rules/bbc-iplayer.yaml
+
+  Line-TV-local:
+    type: file
+    behavior: classical
+    path: ./providers/rules/line-tv.yaml
+
+  TikTok-local:
+    type: file
+    behavior: classical
+    path: ./providers/rules/tiktok.yaml
+
+# ========================================
+# 其他常用 Provider
+# ========================================
+  Telegram:
+    type: http
+    behavior: classical
+    url: "https://cdn.jsdelivr.net/gh/dler-io/Rules@main/Clash/Provider/Telegram.yaml"
+    interval: 86400
+    path: ./providers/rules/telegram.yaml
+
+  Netflix:
+    type: http
+    behavior: classical
+    url: "https://cdn.jsdelivr.net/gh/dler-io/Rules@main/Clash/Provider/Media/Netflix.yaml"
+    interval: 86400
+    path: ./providers/rules/netflix.yaml
+
+  YouTube:
+    type: http
+    behavior: classical
+    url: "https://cdn.jsdelivr.net/gh/dler-io/Rules@main/Clash/Provider/Media/YouTube.yaml"
+    interval: 86400
+    path: ./providers/rules/youtube.yaml
+
+# ========================================
+# Proxy Providers (可选)
+# ========================================
+proxy-providers:
+  my-proxy-provider:
+    type: http
+    url: "https://example.com/proxies.yaml"
+    interval: 3600
+    path: ./providers/proxies/my-proxies.yaml
+    health-check:
+      enable: true
+      interval: 600
+      url: http://www.gstatic.com/generate_204
+
+# ========================================
+# 代理组配置
+# ========================================
+proxies:
+  - name: "DIRECT"
+    type: direct
+
+proxy-groups:
+  - name: "Streaming"
+    type: select
+    proxies:
+      - DIRECT
+
+  - name: "F1 TV"
+    type: select
+    proxies:
+      - Streaming
+      - DIRECT
+
+  - name: "BBC iPlayer"
+    type: select
+    proxies:
+      - Streaming
+      - DIRECT
+
+# ========================================
+# 规则配置
+# ========================================
+rules:
+  # 使用 jsDelivr 版本的 Provider (推荐)
+  - RULE-SET,F1-TV-jsdelivr,F1 TV
+  - RULE-SET,BBC-iPlayer-jsdelivr,BBC iPlayer
+  - RULE-SET,Line-TV-jsdelivr,Streaming
+  - RULE-SET,TikTok-jsdelivr,Streaming
+  
+  # 或者使用本地文件版本
+  # - RULE-SET,F1-TV-local,F1 TV
+  # - RULE-SET,BBC-iPlayer-local,BBC iPlayer
+  # - RULE-SET,Line-TV-local,Streaming
+  # - RULE-SET,TikTok-local,Streaming
+  
+  # 其他规则
+  - RULE-SET,Telegram,Streaming
+  - RULE-SET,Netflix,Streaming
+  - RULE-SET,YouTube,Streaming
+  
+  # 默认规则
+  - GEOIP,CN,DIRECT
+  - MATCH,Streaming
+
+# ========================================
+# 使用说明
+# ========================================
+# 1. 如果遇到 EOF 错误，首先尝试使用 jsDelivr CDN 版本
+# 2. 如果 jsDelivr 也不稳定，使用本地文件版本
+# 3. 使用附带的 fix-provider-errors.sh 脚本下载规则文件到本地
+# 4. 确保 path 指向的目录存在并有写权限
+# 5. interval 设置为 86400 (24小时) 减少频繁更新
+# 6. 本地缓存可以避免每次启动都需要联网下载
