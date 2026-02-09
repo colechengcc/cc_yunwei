@@ -1,0 +1,9 @@
+{
+  "proxies": {
+    "default": {
+      "httpProxy": "http://172.16.21.5:7890",
+      "httpsProxy": "http://172.16.21.5:7890",
+      "noProxy": "127.0.0.1,localhost,reg.smvm.cn"
+    }
+  }
+}

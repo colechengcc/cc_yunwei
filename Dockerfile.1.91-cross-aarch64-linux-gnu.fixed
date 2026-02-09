@@ -1,0 +1,33 @@
+FROM ubuntu:20.04 as base
+
+# Configure proxy for build - SOLUTION TO YOUR ISSUE
+# This ensures apt and curl use the correct proxy
+ENV HTTP_PROXY=http://172.16.21.5:7890
+ENV HTTPS_PROXY=http://172.16.21.5:7890
+ENV http_proxy=http://172.16.21.5:7890
+ENV https_proxy=http://172.16.21.5:7890
+ENV NO_PROXY=127.0.0.1,localhost,reg.smvm.cn
+ENV no_proxy=127.0.0.1,localhost,reg.smvm.cn
+
+# Remove any existing APT proxy configuration that might be using old proxy
+RUN rm -f /etc/apt/apt.conf.d/proxy.conf /etc/apt/apt.conf.d/*proxy* || true
+
+# Configure APT to use the correct proxy explicitly
+RUN echo "Acquire::http::Proxy \"http://172.16.21.5:7890\";" > /etc/apt/apt.conf.d/01proxy \
+    && echo "Acquire::https::Proxy \"http://172.16.21.5:7890\";" >> /etc/apt/apt.conf.d/01proxy
+
+# Now run your installation commands
+RUN apt update \
+     && apt -y install clang make tree fontconfig gperf curl \
+     && ln -s /usr/bin/python3 /usr/bin/python \
+     && curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh -s -- -y --default-toolchain 1.91.0 --target aarch64-unknown-linux-gnu --profile minimal \
+     && . "$HOME/.cargo/env" \
+     && cargo --version \
+     && cp -s /usr/bin/aarch64-linux-gnu-gcc /usr/bin/aarch64-unknown-linux-gnu-gcc \
+     && cp -s /usr/bin/aarch64-linux-gnu-ar /usr/bin/aarch64-unknown-linux-gnu-ar
+
+# Optional: Unset proxy if you don't want it in the final image
+# ENV HTTP_PROXY=
+# ENV HTTPS_PROXY=
+# ENV http_proxy=
+# ENV https_proxy=
