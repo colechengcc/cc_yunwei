@@ -1,0 +1,12 @@
+# OpenVPN 用户账号密码文件
+# 格式：用户名 密码
+# 每行一个用户，用户名和密码之间用空格分隔
+# 注意：此文件包含明文密码，请务必设置正确的权限（chmod 600）
+
+# 示例用户（请修改或删除）
+user1 password123
+user2 securepass456
+admin AdminPass@2024
+
+# 添加您自己的用户
+# username password
